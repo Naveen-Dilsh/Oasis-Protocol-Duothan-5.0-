@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  email       String   @unique
+  password    String
+  members     Json?
+  githubId    String?  @unique
+  avatar      String?
+  totalPoints Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  submissions Submission[]
+  flagSubmissions FlagSubmission[]
+
+  @@map("teams")
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  points      Int      @default(100)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  algorithmicProblem AlgorithmicProblem?
+  buildathonProblem  BuildathonProblem?
+  submissions        Submission[]
+  flagSubmissions    FlagSubmission[]
+
+  @@map("challenges")
+}
+
+model AlgorithmicProblem {
+  id          String @id @default(cuid())
+  challengeId String @unique
+  title       String
+  description String @db.Text
+  inputFormat String @db.Text
+  outputFormat String @db.Text
+  constraints String @db.Text
+  examples    Json
+  flag        String
+  
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("algorithmic_problems")
+}
+
+model BuildathonProblem {
+  id          String @id @default(cuid())
+  challengeId String @unique
+  title       String
+  description String @db.Text
+  requirements String @db.Text
+  resources   Json?
+  
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("buildathon_problems")
+}
+
+model FlagSubmission {
+  id          String   @id @default(cuid())
+  teamId      String
+  challengeId String
+  flag        String
+  isCorrect   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  team      Team      @relation(fields: [teamId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@map("flag_submissions")
+}
+
+model Submission {
+  id          String   @id @default(cuid())
+  teamId      String
+  challengeId String
+  type        String   // 'algorithmic' or 'buildathon'
+  content     String   @db.Text
+  githubLink  String?
+  language    String?
+  output      String?  @db.Text
+  status      String?  // 'pending', 'accepted', 'rejected'
+  isCorrect   Boolean  @default(false)
+  points      Int      @default(0)
+  createdAt   DateTime @default(now())
+  
+  team      Team      @relation(fields: [teamId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@map("submissions")
+}
