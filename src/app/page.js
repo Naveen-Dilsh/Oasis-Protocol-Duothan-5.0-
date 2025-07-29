@@ -113,7 +113,7 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
             <Button
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/admin/login")}
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg"
             >
