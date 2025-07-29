@@ -95,14 +95,7 @@ export default function AdminSidebar({ activeTab, setActiveTab, stats, onNavigat
   }
 
   const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" })
-      localStorage.removeItem("adminToken")
-      toast.success("Logged out successfully")
-      router.push("/login")
-    } catch (error) {
-      toast.error("Logout failed")
-    }
+    
   }
 
   return (
