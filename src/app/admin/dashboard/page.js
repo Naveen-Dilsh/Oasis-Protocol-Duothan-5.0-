@@ -7,8 +7,8 @@ import AdminSidebar from "@/components/admin/AdminSidebar"
 import AdminDashboardOverview from "@/components/admin/AdminDashboardOverview"
 import ChallengeList from "@/components/admin/ChallengeList"
 import ChallengeForm from "@/components/admin/ChallengeForm"
-// import SubmissionsManager from "@/components/admin/SubmissionsManager"
-// import TeamsManager from "@/components/admin/TeamsManager"
+import SubmissionsManager from "@/components/admin/SubmissionsManager"
+import TeamsManager from "@/components/admin/TeamsManager"
 
 export default function AdminDashboardNew() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -83,7 +83,7 @@ export default function AdminDashboardNew() {
         }
         return (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white shadow-xl">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-700 rounded-2xl p-8 text-white shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-4xl font-bold mb-4">Challenge Management</h1>
