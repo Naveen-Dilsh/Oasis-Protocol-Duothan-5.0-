@@ -16,10 +16,63 @@ export default function SubmissionsManager() {
   const [reviewComment, setReviewComment] = useState("")
   const [reviewing, setReviewing] = useState(false)
 
+  useEffect(() => {
+    fetchSubmissions()
+  }, [])
+
+  const fetchSubmissions = async () => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/submissions/${null}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setSubmissions(data)
+      } else {
+        console.error("Failed to fetch submissions")
+      }
+    } catch (error) {
+      console.error("Error fetching submissions:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
   
   const handleReview = async (submissionId, status) => {
     setReviewing(true)
-    
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/submissions/${submissionId}/review`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status,
+          comment: reviewComment,
+        }),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log(result.message)
+        setSelectedSubmission(null)
+        setReviewComment("")
+        fetchSubmissions()
+      } else {
+        const error = await response.json()
+        console.error("Review failed:", error.error)
+      }
+    } catch (error) {
+      console.error("Review error:", error)
+    } finally {
+      setReviewing(false)
+    }
   }
 
   const getStatusBadge = (status) => {
@@ -41,7 +94,7 @@ export default function SubmissionsManager() {
       submission.challenge?.title?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  if (!loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
