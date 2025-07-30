@@ -36,6 +36,34 @@ export default function ChallengeForm({ challenge, onSave, onCancel }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    try {
+      const token = localStorage.getItem("adminToken")
+      const url = challenge ? `/api/admin/challenges/${challenge.id}` : `/api/admin/challenges/${null}`
+
+      const method = challenge ? "PUT" : "POST"
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        const savedChallenge = await response.json()
+        toast.success(challenge ? "Challenge updated!" : "Challenge created!")
+        onSave(savedChallenge)
+      } else {
+        const error = await response.json()
+        toast.error(error.error || "Failed to save challenge")
+      }
+    } catch (error) {
+      toast.error("Failed to save challenge")
+    } finally {
+      setIsLoading(false)
+    }
 
   }
 
