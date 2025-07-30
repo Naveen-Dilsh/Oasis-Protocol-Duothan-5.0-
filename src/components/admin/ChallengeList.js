@@ -12,11 +12,99 @@ export default function ChallengeList({ onEdit, onDelete }) {
   const [challenges, setChallenges] = useState([])
   const [loading, setLoading] = useState(true)
 
-  
+useEffect(() => {
+    fetchChallenges()
+  }, [])
+
+  const fetchChallenges = async () => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/challenges/${null}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setChallenges(data)
+      } else {
+        toast.error("Failed to fetch challenges")
+      }
+    } catch (error) {
+      toast.error("Failed to fetch challenges")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDelete = async (challengeId) => {
     if (!confirm("Are you sure you want to delete this challenge?")) return
 
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/challenges/${challengeId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        toast.success("Challenge deleted successfully")
+        setChallenges((prev) => prev.filter((c) => c.id !== challengeId))
+        onDelete?.(challengeId)
+      } else {
+        toast.error("Failed to delete challenge")
+      }
+    } catch (error) {
+      toast.error("Failed to delete challenge")
+    }
+
+  }
+  const handleEdit = async (challengeId, updatedData) => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/challenges/${challengeId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      })
+
+      if (response.ok) {
+        const updatedChallenge = await response.json()
+        toast.success("Challenge updated successfully")
+        setChallenges((prev) =>
+          prev.map((c) => (c.id === challengeId ? updatedChallenge : c))
+        )
+        return updatedChallenge
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.error || "Failed to update challenge")
+        return null
+      }
+    } catch (error) {
+      toast.error("Failed to update challenge")
+      return null
+    }
+  }
+  const toggleChallengeStatus = async (challengeId, currentStatus) => {
+    const challenge = challenges.find(c => c.id === challengeId)
+    if (!challenge) return
+
+    const updatedData = {
+      title: challenge.title,
+      description: challenge.description,
+      points: challenge.points,
+      isActive: !currentStatus,
+      algorithmicProblem: challenge.algorithmicProblem,
+      buildathonProblem: challenge.buildathonProblem,
+    }
+
+    await handleEdit(challengeId, updatedData)
   }
 
   if (loading) {
@@ -55,7 +143,10 @@ export default function ChallengeList({ onEdit, onDelete }) {
                 <p className="text-cyan-200/80 text-sm">{challenge.description}</p>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant={challenge.isActive ? "default" : "secondary"}>
+                <Badge variant={challenge.isActive ? "default" : "secondary"}
+                className="cursor-pointer hover:opacity-80"
+                  onClick={() => toggleChallengeStatus(challenge.id, challenge.isActive)}
+                >
                   {challenge.isActive ? "Active" : "Inactive"}
                 </Badge>
                 <Badge variant="outline" className="text-yellow-400 border-yellow-400/30">
@@ -93,7 +184,7 @@ export default function ChallengeList({ onEdit, onDelete }) {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => onEdit(challenge)}
+                onClick={() => onEdit?.(challenge, handleEdit)}
                 className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
               >
                 <Edit className="h-4 w-4 mr-1" />

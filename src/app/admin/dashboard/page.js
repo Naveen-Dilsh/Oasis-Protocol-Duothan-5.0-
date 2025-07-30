@@ -116,7 +116,7 @@ export default function AdminDashboardNew() {
   }
 
   const renderContent = () => {
-    if (false) {
+    if (loading) {
       return (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
