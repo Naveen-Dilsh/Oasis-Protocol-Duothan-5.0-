@@ -7,7 +7,19 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { Code, Hammer, Play, CheckCircle, AlertCircle, Clock, Github, Send, Loader2 } from "lucide-react"
+import {
+  Code,
+  Hammer,
+  Play,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Github,
+  Send,
+  Loader2,
+  Trophy,
+  Target,
+} from "lucide-react"
 import { toast } from "sonner"
 
 const CodeEditor = ({ value, onChange, language, height }) => {
@@ -15,7 +27,7 @@ const CodeEditor = ({ value, onChange, language, height }) => {
     <Textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="font-mono text-sm resize-none"
+      className="font-mono text-sm resize-none border-slate-200 bg-slate-50/50 focus:bg-white transition-colors"
       style={{ height }}
       placeholder={`Write your ${language} code here...`}
     />
@@ -101,8 +113,7 @@ int main() {
   useEffect(() => {
     setCode(getDefaultCode(language))
   }, [language])
-
-  //Handle Code Execution
+  console.log(challenge[0].title)
   const handleCodeExecution = async () => {
     if (!code.trim()) {
       toast.error("Please enter some code to execute")
@@ -112,10 +123,9 @@ int main() {
     setIsExecuting(true)
     setExecutionResult(null)
 
-
+    
   }
 
-  //Flag Submission
   const handleFlagSubmission = async () => {
     if (!flag.trim()) {
       toast.error("Please enter a flag")
@@ -127,7 +137,6 @@ int main() {
     
   }
 
-  //Buildathon Submission
   const handleBuildathonSubmission = async () => {
     if (!githubLink.trim()) {
       toast.error("Please enter a GitHub repository link")
@@ -142,54 +151,75 @@ int main() {
 
     setIsSubmitting(true)
 
-
+    
   }
 
   if (!challenge) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-muted-foreground">Select a challenge to get started</p>
+      <div className="flex items-center justify-center h-64 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border border-slate-200">
+        <div className="text-center">
+          <Target className="h-12 w-12 mx-auto mb-4 text-slate-400" />
+          <p className="text-slate-600 font-medium">Select a challenge to get started</p>
+          <p className="text-slate-400 text-sm mt-1">Choose from the available challenges to begin coding</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{challenge.title}</h1>
-          <p className="text-muted-foreground">{challenge.description}</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline">{challenge.points} points</Badge>
-          {progress?.buildathonCompleted && (
-            <Badge className="bg-green-100 text-green-700">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Completed
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-8 border border-slate-200">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Trophy className="h-6 w-6 text-blue-600" />
+              </div>
+              <h1 className="text-3xl font-bold text-slate-800">{challenge[0].title}</h1>
+            </div>
+            <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">{challenge[0].description}</p>
+          </div>
+          <div className="flex items-center space-x-3 ml-6">
+            <Badge
+              variant="secondary"
+              className="bg-amber-100 text-amber-800 border-amber-200 px-4 py-2 text-sm font-semibold"
+            >
+              {challenge.points} points
             </Badge>
-          )}
+            {progress?.buildathonCompleted && (
+              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-4 py-2">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Completed
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="algorithmic" className="flex items-center space-x-2">
-            <Code className="h-4 w-4" />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-xl h-14">
+          <TabsTrigger
+            value="algorithmic"
+            className="flex items-center space-x-3 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg h-12 text-base font-medium"
+          >
+            <Code className="h-5 w-5" />
             <span>Algorithmic Challenge</span>
-            {progress?.algorithmicCompleted && <CheckCircle className="h-3 w-3 text-green-500" />}
+            {progress?.algorithmicCompleted && <CheckCircle className="h-4 w-4 text-emerald-500" />}
           </TabsTrigger>
           <TabsTrigger
             value="buildathon"
             disabled={!progress?.algorithmicCompleted}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-3 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg h-12 text-base font-medium disabled:opacity-50"
           >
-            <Hammer className="h-4 w-4" />
+            <Hammer className="h-5 w-5" />
             <span>Buildathon Challenge</span>
-            {progress?.buildathonCompleted && <CheckCircle className="h-3 w-3 text-green-500" />}
+            {progress?.buildathonCompleted && <CheckCircle className="h-4 w-4 text-emerald-500" />}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="algorithmic" className="space-y-6">
+          {/* Problem Statement */}
           <Card>
             <CardHeader>
               <CardTitle>Problem Statement</CardTitle>
@@ -246,19 +276,29 @@ int main() {
             </CardContent>
           </Card>
 
+          {/* Code Editor and Results */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Code Editor</CardTitle>
-                <CardDescription>Write your solution here</CardDescription>
+            <Card className="shadow-lg border-0 bg-white dark:bg-gray-800">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-500 rounded-lg">
+                    <Code className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl text-gray-900 dark:text-white">Code Editor</CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-300">
+                      Write your solution here
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm font-medium">Language:</label>
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Language:</label>
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="px-3 py-1 border rounded-md bg-background"
+                    className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   >
                     <option value="python">Python</option>
                     <option value="javascript">JavaScript</option>
@@ -269,71 +309,96 @@ int main() {
                 </div>
                 <CodeEditor value={code} onChange={setCode} language={language} height="300px" />
                 <div>
-                  <label className="text-sm font-medium">Input (Optional)</label>
+                  <label className="text-sm font-semibold text-gray-700 mb-2 block dark:text-gray-300">
+                    Input (Optional)
+                  </label>
                   <Textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Enter test input here..."
-                    className="mt-1 font-mono text-sm"
+                    className="font-mono text-sm border-gray-300 focus:border-purple-400 focus:ring-purple-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     rows={3}
                   />
                 </div>
-                <Button onClick={handleCodeExecution} disabled={isExecuting} className="w-full">
+                <Button
+                  onClick={handleCodeExecution}
+                  disabled={isExecuting}
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 rounded-lg font-medium"
+                >
                   {isExecuting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
                   {isExecuting ? "Executing..." : "Run Code"}
                 </Button>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Execution Results</CardTitle>
-                <CardDescription>Output and execution details</CardDescription>
+            <Card className="shadow-lg border-0 bg-white dark:bg-gray-800">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-purple-500 rounded-lg">
+                    <Target className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl text-gray-900 dark:text-white">Execution Results</CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-300">
+                      Output and execution details
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {executionResult ? (
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Status:</span>
-                      <Badge variant={executionResult.error ? "destructive" : "default"}>
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Status:</span>
+                      <Badge
+                        className={
+                          executionResult.error
+                            ? "bg-red-100 text-red-800 border-red-200"
+                            : "bg-green-100 text-green-800 border-green-200"
+                        }
+                      >
                         {executionResult.status || (executionResult.error ? "Error" : "Success")}
                       </Badge>
                     </div>
                     {executionResult.output && (
                       <div>
-                        <label className="text-sm font-medium">Output:</label>
-                        <pre className="mt-1 p-3 bg-muted rounded-md text-sm overflow-x-auto">
+                        <label className="text-sm font-semibold text-gray-700 mb-2 block dark:text-gray-300">
+                          Output:
+                        </label>
+                        <pre className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm overflow-x-auto font-mono dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                           {executionResult.output}
                         </pre>
                       </div>
                     )}
                     {executionResult.error && (
                       <div>
-                        <label className="text-sm font-medium text-destructive">Error:</label>
-                        <pre className="mt-1 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-sm overflow-x-auto text-destructive">
+                        <label className="text-sm font-semibold text-red-700 mb-2 block dark:text-red-300">
+                          Error:
+                        </label>
+                        <pre className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm overflow-x-auto text-red-700 font-mono dark:bg-gray-700 dark:border-red-600 dark:text-red-300">
                           {executionResult.error}
                         </pre>
                       </div>
                     )}
                     {(executionResult.time || executionResult.memory) && (
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-2 gap-4 text-sm bg-blue-50 p-4 rounded-lg">
                         {executionResult.time && (
-                          <div>
-                            <span className="font-medium">Time:</span> {executionResult.time}ms
+                          <div className="text-blue-800 dark:text-blue-300">
+                            <span className="font-semibold">Time:</span> {executionResult.time}ms
                           </div>
                         )}
                         {executionResult.memory && (
-                          <div>
-                            <span className="font-medium">Memory:</span> {executionResult.memory}KB
+                          <div className="text-blue-800 dark:text-blue-300">
+                            <span className="font-semibold">Memory:</span> {executionResult.memory}KB
                           </div>
                         )}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center h-32 text-muted-foreground">
+                  <div className="flex items-center justify-center h-32 text-gray-500 dark:text-gray-400">
                     <div className="text-center">
-                      <Clock className="h-8 w-8 mx-auto mb-2" />
+                      <Clock className="h-8 w-8 mx-auto mb-2 text-purple-400" />
                       <p>Run your code to see results</p>
                     </div>
                   </div>
@@ -342,27 +407,36 @@ int main() {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Submit Flag</CardTitle>
-              <CardDescription>Enter the correct output as your flag to unlock the buildathon phase</CardDescription>
+          {/* Flag Submission */}
+          <Card className="border-slate-200 shadow-sm">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-emerald-50 border-b border-slate-200">
+              <CardTitle className="text-xl text-slate-800">Submit Flag</CardTitle>
+              <CardDescription className="text-slate-600">
+                Enter the correct output as your flag to unlock the buildathon phase
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex space-x-2">
+            <CardContent className="p-6">
+              <div className="flex space-x-3">
                 <Input
                   placeholder="Enter your flag here..."
                   value={flag}
                   onChange={(e) => setFlag(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                 />
-                <Button onClick={handleFlagSubmission} disabled={isSubmitting}>
+                <Button
+                  onClick={handleFlagSubmission}
+                  disabled={isSubmitting}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-semibold transition-colors"
+                >
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                   Submit Flag
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Hint: The correct flag is the expected output from your program
-              </p>
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <p className="text-sm text-blue-700">
+                  <strong>Hint:</strong> The correct flag is the expected output from your program
+                </p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -407,34 +481,40 @@ int main() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Submit Your Solution</CardTitle>
-                  <CardDescription>
+              <Card className="border-slate-200 shadow-sm">
+                <CardHeader className="bg-gradient-to-r from-slate-50 to-indigo-50 border-b border-slate-200">
+                  <CardTitle className="text-xl text-slate-800">Submit Your Solution</CardTitle>
+                  <CardDescription className="text-slate-600">
                     Provide a GitHub repository link containing your buildathon solution
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-6 space-y-6">
                   <div>
-                    <label className="text-sm font-medium">GitHub Repository URL</label>
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">GitHub Repository URL</label>
                     <Input
                       placeholder="https://github.com/username/repository"
                       value={githubLink}
                       onChange={(e) => setGithubLink(e.target.value)}
-                      className="mt-1"
+                      className="border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Project Description (Optional)</label>
+                    <label className="text-sm font-semibold text-slate-700 mb-2 block">
+                      Project Description (Optional)
+                    </label>
                     <Textarea
                       placeholder="Describe your solution, technologies used, and any special features..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="mt-1"
+                      className="border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       rows={4}
                     />
                   </div>
-                  <Button onClick={handleBuildathonSubmission} disabled={isSubmitting} className="w-full">
+                  <Button
+                    onClick={handleBuildathonSubmission}
+                    disabled={isSubmitting}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold transition-colors"
+                  >
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
@@ -442,25 +522,41 @@ int main() {
                     )}
                     Submit Project
                   </Button>
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h4 className="font-medium mb-2">Submission Requirements:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Repository must be public</li>
-                      <li>• Include a detailed README.md</li>
-                      <li>• Source code should be well-documented</li>
-                      <li>• Include setup/installation instructions</li>
-                      <li>• Demonstrate the working solution</li>
+                  <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h4 className="font-semibold text-slate-800 mb-3">Submission Requirements:</h4>
+                    <ul className="text-sm text-slate-600 space-y-2">
+                      <li className="flex items-start">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        Repository must be public
+                      </li>
+                      <li className="flex items-start">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        Include a detailed README.md
+                      </li>
+                      <li className="flex items-start">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        Source code should be well-documented
+                      </li>
+                      <li className="flex items-start">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        Include setup/installation instructions
+                      </li>
+                      <li className="flex items-start">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        Demonstrate the working solution
+                      </li>
                     </ul>
                   </div>
                 </CardContent>
               </Card>
             </>
           ) : (
-            <Card>
-              <CardContent className="flex items-center justify-center h-32">
-                <div className="text-center text-muted-foreground">
-                  <AlertCircle className="h-8 w-8 mx-auto mb-2" />
-                  <p>Complete the algorithmic challenge first to unlock this phase</p>
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="flex items-center justify-center h-48 bg-gradient-to-br from-slate-50 to-amber-50">
+                <div className="text-center text-slate-600">
+                  <AlertCircle className="h-12 w-12 mx-auto mb-4 text-amber-500" />
+                  <p className="font-semibold text-lg">Complete the algorithmic challenge first</p>
+                  <p className="text-sm mt-1">Unlock this phase by solving the coding problem above</p>
                 </div>
               </CardContent>
             </Card>
