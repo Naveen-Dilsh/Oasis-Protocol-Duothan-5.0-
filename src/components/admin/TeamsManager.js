@@ -12,10 +12,53 @@ export default function TeamsManager() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
 
+  useEffect(() => {
+    fetchTeams()
+  }, [])
 
+  const fetchTeams = async () => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/teams/${null}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setTeams(data)
+      } else {
+        console.error("Failed to fetch teams")
+      }
+    } catch (error) {
+      console.error("Error fetching teams:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleTeamAction = async (teamId, action) => {
-    
+      try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch(`/api/admin/teams/${teamId}/${action}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log(result.message)
+        fetchTeams()
+      } else {
+        const error = await response.json()
+        console.error(error.message || `Failed to ${action} team`)
+      }
+    } catch (error) {
+      console.error(`Team ${action} error:`, error)
+    }
   }
 
   const exportTeams = () => {
@@ -101,7 +144,7 @@ export default function TeamsManager() {
       team.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  if (!loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
