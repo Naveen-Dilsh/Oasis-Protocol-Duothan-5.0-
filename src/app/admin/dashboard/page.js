@@ -26,6 +26,65 @@ export default function AdminDashboardNew() {
   const [challengeFormMode, setChallengeFormMode] = useState("list") // 'list', 'create', 'edit'
   const router = useRouter()
 
+  useEffect(() => {
+    checkAuth()
+    fetchStats()
+  }, [])
+
+
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem("adminToken")
+    if (!token) {
+      router.push("/admin/login")
+      return
+    }
+
+    try {
+      const response = await fetch("/api/admin/stats", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        localStorage.removeItem("adminToken")
+        toast.error("Session expired. Please login again.")
+        router.push("/admin/login")
+      }
+    } catch (error) {
+      localStorage.removeItem("adminToken")
+      router.push("/admin/login")
+    }
+  }
+
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem("adminToken")
+      const response = await fetch("/api/admin/stats", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setStats({
+          totalTeams: data.teamCount || 0,
+          totalChallenges: data.challengeCount || 0,
+          activeChallenges: data.activeChallenges || 0,
+          totalSubmissions: data.submissionCount || 0,
+          pendingSubmissions: Math.floor(Math.random() * 10), // Mock data
+          activeTeams: Math.floor(data.teamCount * 0.8), // Mock data
+          systemAlerts: 0, // Mock data
+        })
+      }
+    } catch (error) {
+      console.error("Failed to fetch stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleNavigation = (view) => {
     setActiveTab(view)
