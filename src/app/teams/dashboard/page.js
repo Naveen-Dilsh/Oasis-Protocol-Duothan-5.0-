@@ -16,100 +16,96 @@ export default function TeamDashboard() {
   const [challenges, setChallenges] = useState([])
   const [teamProgress, setTeamProgress] = useState([])
   const [submissions, setSubmissions] = useState([])
-  const [selectedChallenge, setSelectedChallenge] = useState([
-    {
-      title: "The First Key",
-      description:
-        "Unlock the first layer of the OASIS security system. This challenge tests your ability to decode encrypted messages and understand the fundamental structure of the virtual world.",
-      points: 500,
-      order: 1,
-      algorithmicProblem: {
-        title: "Array Sum Challenge",
-        description:
-          "Given an array of integers, find the sum of all elements and return it as a string with the prefix 'SUM_'.",
-        inputFormat: "First line contains n (array size). Second line contains n space-separated integers.",
-        outputFormat: "Single line containing 'SUM_' followed by the sum",
-        constraints: "1 ≤ n ≤ 1000, -1000 ≤ array elements ≤ 1000",
-        examples: [
-          {
-            input: "3\n1 2 3",
-            output: "SUM_6",
-          },
-          {
-            input: "4\n-1 0 1 2",
-            output: "SUM_2",
-          },
-        ],
-        flag: "SUM_6",
-      },
-      buildathonProblem: {
-        title: "Task Management Dashboard",
-        description: "Build a responsive task management dashboard with user authentication and real-time updates.",
-        requirements: `
-1. User authentication system (login/register)
-2. Create, read, update, delete tasks
-3. Task categories and priorities
-4. Responsive design for mobile and desktop
-5. Search and filter functionality
-6. Data persistence (database or local storage)
-7. Clean, modern UI/UX design
-        `,
-        resources: [
-          "https://react.dev",
-          "https://nextjs.org/docs",
-          "https://tailwindcss.com/docs",
-          "https://ui.shadcn.com",
-        ],
-      },
-    },
-    {
-      title: "The Second Gate",
-      description: "Navigate through the second security layer by solving complex algorithmic puzzles.",
-      points: 750,
-      order: 2,
-      algorithmicProblem: {
-        title: "String Reversal Cipher",
-        description:
-          "Reverse each word in a sentence while keeping the word order intact. Return the result with 'REVERSED_' prefix.",
-        inputFormat: "Single line containing a sentence with words separated by spaces.",
-        outputFormat: "Single line containing 'REVERSED_' followed by the processed sentence",
-        constraints: "1 ≤ sentence length ≤ 1000 characters",
-        examples: [
-          {
-            input: "hello world",
-            output: "REVERSED_olleh dlrow",
-          },
-          {
-            input: "the quick brown fox",
-            output: "REVERSED_eht kciuq nworb xof",
-          },
-        ],
-        flag: "REVERSED_olleh dlrow",
-      },
-      buildathonProblem: {
-        title: "E-commerce Product Catalog",
-        description: "Create a modern e-commerce product catalog with shopping cart functionality.",
-        requirements: `
-1. Product listing with search and filters
-2. Product detail pages with images
-3. Shopping cart with add/remove items
-4. User authentication and profiles
-5. Responsive design
-6. Product categories and sorting
-7. Checkout process simulation
-        `,
-        resources: [
-          "https://stripe.com/docs",
-          "https://nextjs.org/docs/app/building-your-application/data-fetching",
-          "https://www.prisma.io/docs",
-        ],
-      },
-    },
-  ]
-)
+  const [selectedChallenge, setSelectedChallenge] = useState([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
+  useEffect(() => {
+    checkAuth()
+    fetchData()
+  }, [])
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem("teamToken")
+    if (!token) {
+      router.push("/teams/login")
+      return
+    }
+  }
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("teamToken")
+
+      // Fetch challenges and team progress
+      const challengesResponse = await fetch("/api/teams/challenges", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (challengesResponse.ok) {
+        const challengesData = await challengesResponse.json()
+        setChallenges(challengesData)
+
+        // Set first incomplete challenge as selected
+        const firstIncomplete = challengesData.find((c) => !c.buildathonCompleted)
+        if (firstIncomplete) {
+          setSelectedChallenge(firstIncomplete)
+        }
+
+        // Extract team progress from challenges data
+        const progress = challengesData.map((challenge) => ({
+          challengeId: challenge.id,
+          algorithmicCompleted: challenge.algorithmicCompleted,
+          buildathonCompleted: challenge.buildathonCompleted,
+          totalTime: Math.floor(Math.random() * 3600), // Mock data
+        }))
+        setTeamProgress(progress)
+      }
+
+      // Fetch team info from leaderboard
+      const leaderboardResponse = await fetch("/api/teams/leaderboard")
+      if (leaderboardResponse.ok) {
+        const leaderboardData = await leaderboardResponse.json()
+        // Find current team in leaderboard (mock implementation)
+        const currentTeam = leaderboardData[0] // This should be properly implemented
+        setTeam({
+          name: "Your Team", // This should come from token/session
+          email: "team@example.com",
+          points: currentTeam?.totalPoints || 0,
+          rank: currentTeam?.rank || 1,
+          members: ["Member 1", "Member 2", "Member 3"],
+          createdAt: new Date().toISOString(),
+        })
+      }
+
+      // Mock submissions data
+      setSubmissions([
+        {
+          id: 1,
+          challengeId: 1,
+          type: "algorithmic",
+          status: "accepted",
+          createdAt: new Date().toISOString(),
+          challenge: { title: "Binary Search Tree" },
+        },
+        {
+          id: 2,
+          challengeId: 1,
+          type: "buildathon",
+          status: "accepted",
+          createdAt: new Date().toISOString(),
+          challenge: { title: "Binary Search Tree" },
+        },
+      ])
+    } catch (error) {
+      toast.error("Failed to fetch data")
+      console.error("Error fetching data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleNavigation = (view) => {
     setCurrentView(view)
@@ -135,7 +131,7 @@ export default function TeamDashboard() {
   }
 
   const renderContent = () => {
-    if (!loading) {
+    if (loading) {
       return (
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
