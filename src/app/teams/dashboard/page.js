@@ -38,6 +38,30 @@ export default function TeamDashboard() {
     try {
       const token = localStorage.getItem("teamToken")
 
+      // Fetch team profile data
+      const teamResponse = await fetch("/api/teams/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (teamResponse.ok) {
+        const teamData = await teamResponse.json()
+        setTeam({
+          name: teamData.name,
+          email: teamData.email,
+          points: teamData.points,
+          rank: teamData.rank,
+          members: teamData.members,
+          createdAt: teamData.createdAt,
+        })
+      } else if (teamResponse.status === 401) {
+        // Token is invalid, redirect to login
+        localStorage.removeItem("teamToken")
+        router.push("/teams/login")
+        return
+      }
+
       // Fetch challenges and team progress
       const challengesResponse = await fetch("/api/teams/challenges", {
         headers: {
@@ -66,24 +90,6 @@ export default function TeamDashboard() {
         setTeamProgress(progress)
         console.log(progress)
       }
-
-      // Fetch team info from leaderboard
-      const leaderboardResponse = await fetch("/api/teams/leaderboard")
-      if (leaderboardResponse.ok) {
-        const leaderboardData = await leaderboardResponse.json()
-        // Find current team in leaderboard (mock implementation)
-        const currentTeam = leaderboardData[0] // This should be properly implemented
-        setTeam({
-          name: "Your Team", // This should come from token/session
-          email: "team@example.com",
-          points: currentTeam?.totalPoints || 0,
-          rank: currentTeam?.rank || 1,
-          members: ["Member 1", "Member 2", "Member 3"],
-          createdAt: new Date().toISOString(),
-        })
-      }
-
-      // Mock submissions data
       setSubmissions([
         {
           id: 1,
