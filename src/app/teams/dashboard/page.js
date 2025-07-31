@@ -13,16 +13,7 @@ import TeamProfile from "@/components/team/TeamProfile"
 
 export default function TeamDashboard() {
   const [currentView, setCurrentView] = useState("challenges")
-  const [team, setTeam] = useState(
-    {
-          name: "Your Team", // This should come from token/session
-          email: "team@example.com",
-          points: 100,
-          rank: 1,
-          members: ["Member 1", "Member 2", "Member 3"],
-          createdAt: new Date().toISOString(),
-    }
-  )
+  const [team, setTeam] = useState()
   const [challenges, setChallenges] = useState([])
   const [teamProgress, setTeamProgress] = useState([])
   const [submissions, setSubmissions] = useState([])
@@ -57,6 +48,7 @@ export default function TeamDashboard() {
       if (challengesResponse.ok) {
         const challengesData = await challengesResponse.json()
         setChallenges(challengesData)
+     
 
         // Set first incomplete challenge as selected
         const firstIncomplete = challengesData.find((c) => !c.buildathonCompleted)
@@ -72,6 +64,7 @@ export default function TeamDashboard() {
           totalTime: Math.floor(Math.random() * 3600), // Mock data
         }))
         setTeamProgress(progress)
+        console.log(progress)
       }
 
       // Fetch team info from leaderboard

@@ -114,9 +114,6 @@ int main() {
     setCode(getDefaultCode(language))
   }, [language])
 
-
-  //Handle Code Execution
-
   const handleCodeExecution = async () => {
     if (!code.trim()) {
       toast.error("Please enter some code to execute")
@@ -126,7 +123,8 @@ int main() {
     setIsExecuting(true)
     setExecutionResult(null)
 
-    
+  
+      
   }
 
   const handleFlagSubmission = async () => {
@@ -154,7 +152,7 @@ int main() {
 
     setIsSubmitting(true)
 
-    
+  
   }
 
   if (!challenge) {
@@ -170,19 +168,6 @@ int main() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">{challenge.title}</h1>
-          <p className="text-muted-foreground">{challenge.description}</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline">{challenge.points} points</Badge>
-          {progress?.buildathonCompleted && (
-            <Badge className="bg-green-100 text-green-700">
-              <CheckCircle className="h-3 w-3 mr-1" />
-              Completed
-
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-8 border border-slate-200">
@@ -192,11 +177,9 @@ int main() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Trophy className="h-6 w-6 text-blue-600" />
               </div>
-
               <h1 className="text-3xl font-bold text-slate-800">{challenge.title}</h1>
             </div>
             <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">{challenge.description}</p>
-
           </div>
           <div className="flex items-center space-x-3 ml-6">
             <Badge
@@ -204,7 +187,6 @@ int main() {
               className="bg-amber-100 text-amber-800 border-amber-200 px-4 py-2 text-sm font-semibold"
             >
               {challenge.points} points
-
             </Badge>
             {progress?.buildathonCompleted && (
               <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-4 py-2">
