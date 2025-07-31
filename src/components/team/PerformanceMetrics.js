@@ -7,9 +7,11 @@ import { TrendingUp, Clock, Code, Trophy, Target, Calendar, CheckCircle, XCircle
 import { formatDate } from "@/lib/utils"
 
 export default function PerformanceMetrics({ team, submissions, progress }) {
+
   console.log(team)
   console.log(submissions)
   console.log(progress)
+
   const totalSubmissions = submissions?.length || 0
   const acceptedSubmissions = submissions?.filter((s) => s.status === "accepted").length || 0
   const rejectedSubmissions = submissions?.filter((s) => s.status === "rejected").length || 0

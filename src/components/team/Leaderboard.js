@@ -15,6 +15,7 @@ export default function Leaderboard({ currentTeam }) {
     activeChallenges: 0,
   })
 
+
   useEffect(() => {
     fetchLeaderboard()
   }, [])
@@ -42,6 +43,7 @@ export default function Leaderboard({ currentTeam }) {
       setLoading(false)
     }
   }
+
  
 
   const getRankIcon = (rank) => {
@@ -85,7 +87,9 @@ export default function Leaderboard({ currentTeam }) {
             <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">See how your team ranks against others</p>
           </div>
           <div className="flex items-center space-x-3 ml-6">
+
             <Button onClick={fetchLeaderboard} disabled={loading} variant="outline">
+
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
