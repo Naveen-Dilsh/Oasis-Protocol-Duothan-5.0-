@@ -5,14 +5,24 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Sidebar from "@/components/team/Sidebar"
 import ActiveChallenge from "@/components/team/ActiveChallenge"
-// import PerformanceMetrics from "@/components/dashboard/PerformanceMetrics"
-// import ChallengeProgress from "@/components/dashboard/ChallengeProgress"
-// import Leaderboard from "@/components/dashboard/Leaderboard"
-// import TeamProfile from "@/components/dashboard/TeamProfile"
+import ChallengeProgress from "@/components/team/ChallengeProgress"
+import Leaderboard from "@/components/team/Leaderboard"
+import PerformanceMetrics from "@/components/team/PerformanceMetrics"
+import TeamProfile from "@/components/team/TeamProfile"
+
 
 export default function TeamDashboard() {
   const [currentView, setCurrentView] = useState("challenges")
-  const [team, setTeam] = useState(null)
+  const [team, setTeam] = useState(
+    {
+          name: "Your Team", // This should come from token/session
+          email: "team@example.com",
+          points: 100,
+          rank: 1,
+          members: ["Member 1", "Member 2", "Member 3"],
+          createdAt: new Date().toISOString(),
+    }
+  )
   const [challenges, setChallenges] = useState([])
   const [teamProgress, setTeamProgress] = useState([])
   const [submissions, setSubmissions] = useState([])
