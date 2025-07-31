@@ -15,6 +15,35 @@ export default function Leaderboard({ currentTeam }) {
     activeChallenges: 0,
   })
 
+
+  useEffect(() => {
+    fetchLeaderboard()
+  }, [])
+
+  const fetchLeaderboard = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/teams/leaderboard", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("teamToken")}`,
+        },
+      })
+      const data = await response.json()
+      setLeaderboard(data || [])
+
+      // Calculate stats from leaderboard data
+      setStats({
+        totalTeams: data?.length || 0,
+        totalSubmissions: data?.reduce((acc, team) => acc + (team.challengesCompleted || 0), 0) || 0,
+        activeChallenges: 3, // This should come from backend
+      })
+    } catch (error) {
+      console.error("Failed to fetch leaderboard:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
  
 
   const getRankIcon = (rank) => {
@@ -58,7 +87,9 @@ export default function Leaderboard({ currentTeam }) {
             <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">See how your team ranks against others</p>
           </div>
           <div className="flex items-center space-x-3 ml-6">
-            <Button onClick={null} disabled={loading} variant="outline">
+
+            <Button onClick={fetchLeaderboard} disabled={loading} variant="outline">
+
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
