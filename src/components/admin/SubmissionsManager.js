@@ -14,6 +14,7 @@ export default function SubmissionsManager() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSubmission, setSelectedSubmission] = useState(null)
   const [reviewComment, setReviewComment] = useState("")
+  const [points, setPoints] = useState("")
   const [reviewing, setReviewing] = useState(false)
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function SubmissionsManager() {
   const fetchSubmissions = async () => {
     try {
       const token = localStorage.getItem("adminToken")
-      const response = await fetch(`/api/admin/submissions/${null}`, {
+      const response = await fetch("/api/admin/submissions/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,6 +56,7 @@ export default function SubmissionsManager() {
         body: JSON.stringify({
           status,
           comment: reviewComment,
+          point : points
         }),
       })
 
@@ -350,6 +352,21 @@ export default function SubmissionsManager() {
                     </pre>
                   </div>
                 </div>
+              )}
+              {(!selectedSubmission.status || selectedSubmission.status === "pending") && (
+              <div>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Add Points</h3>
+                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg max-h-64 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
+                    <input
+                    placeholder="Add your review comment..."
+                    value={points}
+                    onChange={(e) => setPoints(e.target.value)}
+                    className="min-h-[10px] border-2"
+                  />
+                  </pre>
+                </div>
+              </div>
               )}
 
               {(!selectedSubmission.status || selectedSubmission.status === "pending") && (
