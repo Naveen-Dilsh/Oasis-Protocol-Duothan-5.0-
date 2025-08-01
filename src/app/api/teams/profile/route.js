@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import jwt from "jsonwebtoken"
+import { verifyTeamToken } from "@/lib/team-auth"
 
 export async function GET(request) {
   try {
@@ -90,3 +91,45 @@ export async function GET(request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
+export async function PUT(request) {
+  console.log("Come")
+  try {
+    
+    const token = request.headers.get("authorization")?.replace("Bearer ", "")
+
+    if (!token) {
+      return NextResponse.json({ error: "No token provided" }, { status: 401 })
+    }
+
+    const decoded = verifyTeamToken(token)
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 })
+    }
+    console.log("Ok")
+    const { name, members, email } = await request.json()
+
+    // Update team profile
+    const updatedTeam = await prisma.team.update({
+      where: { id: decoded.teamId },
+      data: {
+        name,
+        email,
+        members: Array.isArray(members) ? members : [members],
+      },
+    })
+
+    return NextResponse.json({
+      id: updatedTeam.id,
+      name: updatedTeam.name,
+      email: updatedTeam.email,
+      members: updatedTeam.members,
+      points: updatedTeam.points,
+      createdAt: updatedTeam.createdAt,
+    })
+  } catch (error) {
+    console.error("Profile update error:", error)
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 })
+  }
+}
+
