@@ -74,9 +74,9 @@ export default function AdminDashboardNew() {
           totalChallenges: data.challengeCount || 0,
           activeChallenges: data.activeChallenges || 0,
           totalSubmissions: data.submissionCount || 0,
-          pendingSubmissions: Math.floor(Math.random() * 10), // Mock data
-          activeTeams: Math.floor(data.teamCount * 0.8), // Mock data
-          systemAlerts: 0, // Mock data
+          pendingSubmissions: data.pendingSubmissions || 0,
+          activeTeams: data.activeTeams || 0, 
+          systemAlerts: data.systemAlerts || 0,
         })
       }
     } catch (error) {
