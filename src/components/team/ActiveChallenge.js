@@ -123,7 +123,40 @@ int main() {
     setIsExecuting(true)
     setExecutionResult(null)
 
-  
+    try {
+      const token = localStorage.getItem("teamToken")
+      const response = await fetch("/api/teams/execute-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          code,
+          language,
+          input,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setExecutionResult(result)
+        if (result.error) {
+          toast.error("Code execution completed with errors")
+        } else {
+          toast.success(`Code executed successfully`)
+        }
+      } else {
+        toast.error(result.error || "Execution failed")
+        setExecutionResult({ error: result.error || "Execution failed", status: "Failed" })
+      }
+    } catch (error) {
+      toast.error("Network error during execution")
+      setExecutionResult({ error: "Network error: Unable to connect to execution server", status: "Network Error" })
+    } finally {
+      setIsExecuting(false)
+    }
       
   }
 
