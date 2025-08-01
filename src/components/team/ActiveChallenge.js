@@ -216,7 +216,36 @@ int main() {
     }
 
     setIsSubmitting(true)
+    try {
+      const token = localStorage.getItem("teamToken")
+      const response = await fetch("/api/teams/submit-buildathon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          challengeId: challenge.id,
+          githubLink: githubLink.trim(),
+          description: description.trim(),
+        }),
+      })
 
+      const result = await response.json()
+
+      if (response.ok) {
+        toast.success(result.message)
+        setGithubLink("")
+        setDescription("")
+        if (onSubmitBuildathon) onSubmitBuildathon(challenge.id, githubLink)
+      } else {
+        toast.error(result.error || "Submission failed")
+      }
+    } catch (error) {
+      toast.error("Submission failed")
+    } finally {
+      setIsSubmitting(false)
+    }
   
   }
 
@@ -242,7 +271,7 @@ int main() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Trophy className="h-6 w-6 text-blue-600" />
               </div>
-              <h1 className="text-3xl font-bold text-slate-800">{challenge.title}</h1>
+              <h1 className="text-3xl font-bold text-slate-800">{challenge.title || "You have completed ALL"}</h1>
             </div>
             <p className="text-slate-600 text-lg leading-relaxed max-w-3xl">{challenge.description}</p>
           </div>
