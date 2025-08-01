@@ -19,7 +19,33 @@ export default function TeamProfile({ team, onUpdate }) {
   })
 
   const handleSave = async () => {
-    
+    try {
+      const token = localStorage.getItem("teamToken")
+      const response = await fetch("/api/teams/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          members: formData.members.split("\n").filter((m) => m.trim()),
+          email: formData.email,
+        }),
+      })
+
+      if (response.ok) {
+        const updatedTeam = await response.json()
+        toast.success("Profile updated successfully")
+        setIsEditing(false)
+        if (onUpdate) onUpdate(updatedTeam)
+      } else {
+        const error = await response.json()
+        toast.error(error.error || "Failed to update profile")
+      }
+    } catch (error) {
+      toast.error("Failed to update profile")
+    }
   }
 
   return (
