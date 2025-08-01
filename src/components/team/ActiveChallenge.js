@@ -167,7 +167,39 @@ int main() {
     }
 
     setIsSubmitting(true)
+    try {
+      const token = localStorage.getItem("teamToken")
+      const response = await fetch("/api/teams/submit-flag", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          challengeId: challenge.id,
+          flag: flag.trim(),
+        }),
+      })
 
+      const result = await response.json()
+
+      if (response.ok) {
+        if (result.isCorrect) {
+          toast.success(result.message)
+          setActiveTab("buildathon")
+          setFlag("")
+          if (onSubmitFlag) onSubmitFlag(challenge.id, flag)
+        } else {
+          toast.error(result.message)
+        }
+      } else {
+        toast.error(result.error || "Submission failed")
+      }
+    } catch (error) {
+      toast.error("Submission failed")
+    } finally {
+      setIsSubmitting(false)
+    }
     
   }
 
