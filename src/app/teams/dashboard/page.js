@@ -90,24 +90,21 @@ export default function TeamDashboard() {
         setTeamProgress(progress)
         console.log(progress)
       }
-      setSubmissions([
-        {
-          id: 1,
-          challengeId: 1,
-          type: "algorithmic",
-          status: "accepted",
-          createdAt: new Date().toISOString(),
-          challenge: { title: "Binary Search Tree" },
+      // Fetch team submissions data
+      const submissionsResponse = await fetch("/api/teams/submissions", {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          id: 2,
-          challengeId: 1,
-          type: "buildathon",
-          status: "accepted",
-          createdAt: new Date().toISOString(),
-          challenge: { title: "Binary Search Tree" },
-        },
-      ])
+      })
+
+      if (submissionsResponse.ok) {
+        const submissionsData = await submissionsResponse.json()
+        setSubmissions(submissionsData)
+        console.log(submissionsData)
+      } else {
+        console.error("Failed to fetch submissions")
+        setSubmissions([]) // Set empty array as fallback
+      }
     } catch (error) {
       toast.error("Failed to fetch data")
       console.error("Error fetching data:", error)
