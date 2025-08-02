@@ -35,4 +35,3 @@ export async function GET(request) {
   }
 }
 
-//FIXME : Need to add active inactive put methods for that

@@ -77,14 +77,6 @@ export default function HomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <Button
-                onClick={() => router.push("/flag-guide")}
-                variant="ghost"
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <Key className="h-4 w-4 mr-2" />
-                Flag Guide
-              </Button>
-              <Button
                 onClick={() => router.push("/login")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
@@ -139,22 +131,6 @@ export default function HomePage() {
             </Button>
           </div>
 
-          {/* New Flag Guide CTA */}
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6 mb-16 max-w-2xl mx-auto">
-            <div className="flex items-center justify-center mb-4">
-              <div className="p-2 bg-yellow-500 rounded-lg mr-3">
-                <Key className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900">New to OASIS Protocol?</h3>
-            </div>
-            <p className="text-gray-700 mb-4">
-              Learn how to solve challenges and find flags with our comprehensive guide!
-            </p>
-            <Button onClick={() => router.push("/flag-guide")} className="bg-yellow-500 hover:bg-yellow-600 text-white">
-              <HelpCircle className="h-4 w-4 mr-2" />
-              View Flag Guide
-            </Button>
-          </div>
         </div>
 
         {/* Features Grid */}

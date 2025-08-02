@@ -137,6 +137,7 @@ export default function AdminDashboardNew() {
               challenge={selectedChallenge}
               onSave={handleChallengeSave}
               onCancel={handleChallengeCancel}
+              onStatsUpdate={fetchStats} 
             />
           )
         }
@@ -156,11 +157,11 @@ export default function AdminDashboardNew() {
                 </button>
               </div>
             </div>
-            <ChallengeList onEdit={handleChallengeEdit} />
+            <ChallengeList onEdit={handleChallengeEdit} onStatsUpdate={fetchStats} />
           </div>
         )
       case "submissions":
-        return <SubmissionsManager />
+        return <SubmissionsManager onStatsUpdate={fetchStats}  />
       case "teams":
         return <TeamsManager />
       case "leaderboard":

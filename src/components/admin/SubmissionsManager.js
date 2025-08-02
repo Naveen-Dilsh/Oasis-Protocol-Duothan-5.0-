@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FileText, Search, Clock, CheckCircle, XCircle, Eye, MessageSquare, ExternalLink } from "lucide-react"
 
-export default function SubmissionsManager() {
+export default function SubmissionsManager({ onStatsUpdate }) {
   const [submissions, setSubmissions] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -66,6 +66,9 @@ export default function SubmissionsManager() {
         setSelectedSubmission(null)
         setReviewComment("")
         fetchSubmissions()
+        if (onStatsUpdate) {
+        onStatsUpdate()
+      }
       } else {
         const error = await response.json()
         console.error("Review failed:", error.error)

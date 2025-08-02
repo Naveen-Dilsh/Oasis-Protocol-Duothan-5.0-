@@ -188,6 +188,7 @@ int main() {
           toast.success(result.message)
           setActiveTab("buildathon")
           setFlag("")
+          window.scrollTo({ top: 0, behavior: 'smooth' })
           if (onSubmitFlag) onSubmitFlag(challenge.id, flag)
         } else {
           toast.error(result.message)
@@ -237,6 +238,7 @@ int main() {
         toast.success(result.message)
         setGithubLink("")
         setDescription("")
+        window.scrollTo({ top: 0, behavior: 'smooth' })
         if (onSubmitBuildathon) onSubmitBuildathon(challenge.id, githubLink)
       } else {
         toast.error(result.error || "Submission failed")
